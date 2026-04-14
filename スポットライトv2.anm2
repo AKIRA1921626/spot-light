@@ -48,13 +48,18 @@
 --track@spotlight_blur5:ぼかし5,0,1000,0
 --select@shape5:種類5=1,背景=0,円=1,四角形=2,三角形=3,五角形=4,六角形=5,星型=6,ハート=7
 
+-- 1つ目のマスクにだけ対応するアンカーを設置
 obj.setanchor("spotlight_x,spotlight_y",0)
 
+-- 元のオブジェクトをcacheに避難
 obj.copybuffer("cache:origin","object")
 
 obj.setoption("dst","tmp",obj.screen_w,obj.screen_h)
 
+-- マスクの元になる図形
 obj.load("figure","背景",spotlight_color,1)
+
+------------------------- スポットライトの数を判別する処理
 
 local e_num = 1
 
@@ -70,6 +75,10 @@ end
 if spotlight_enable5 == 1 then
     e_num = e_num + 1
 end
+
+------------------------- 判別終了
+
+------------------------- マスクを作成する処理
 
 -- 5つ分のデータを格納する親テーブル
 local all_spotlights = {}
@@ -125,21 +134,28 @@ for i = 1,e_num do
     )
 end
 
+------------------------- マスク作成終了
+
+-- "マスクの元になる図形"で作成したマスクを適用した背景を仮想バッファに描画
 local ox,oy,oz,zoom,alpha,rx,ry,rz = obj.ox,obj.oy,obj.oz,1,spotlight_alpha/100,obj.rx,obj.ry,obj.ry
 obj.draw(ox,oy,oz,zoom,alpha,rx,ry,rz)
 
+-- 上記を描画した仮想バッファをcacheに保存
 obj.copybuffer("cache:spotlight","tmp")
 
 obj.clearbuffer("tempbuffer")
 
+-- 元のオブジェクトをcacheから呼び戻す
 obj.copybuffer("object","cache:origin")
 
 obj.draw()
 
+-- マスクを付与した背景をcacheから呼び戻す
 obj.copybuffer("object","cache:spotlight")
 
 obj.draw()
 
+-- ここで描画先をフレームバッファに戻して仮想バッファを読み込んで終了
 obj.setoption("dst","frm")
 
 obj.load("tempbuffer")

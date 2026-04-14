@@ -1,0 +1,145 @@
+-- label:装飾
+
+--track@spotlight_x:X,-5000,5000,300,0.1
+--track@spotlight_y:Y,-5000,5000,200,0.1
+--track@spotlight_rotate:回転,-3600,3600,0,0.01
+--track@spotlight_aspect:縦横比,-100,100,0,0.01
+--track@spotlight_size:サイズ,0,4000,300
+--track@spotlight_blur:ぼかし,0,1000,0
+--select@shape:種類=1,背景=0,円=1,四角形=2,三角形=3,五角形=4,六角形=5,星型=6,ハート=7
+--color@spotlight_color:色,0x000000
+--track@spotlight_alpha:透明度,0,100,70,0.01
+
+--group:スポットライト2~5つ目,false
+
+--check@spotlight_enable2:スポットライト2つめ,0
+--track@spotlight_x2:X2,-5000,5000,-300,0.1
+--track@spotlight_y2:Y2,-5000,5000,200,0.1
+--track@spotlight_rotate2:回転2,-3600,3600,0,0.01
+--track@spotlight_aspect2:縦横比2,-100,100,0,0.01
+--track@spotlight_size2:サイズ2,0,4000,300
+--track@spotlight_blur2:ぼかし2,0,1000,0
+--select@shape2:種類2=1,背景=0,円=1,四角形=2,三角形=3,五角形=4,六角形=5,星型=6,ハート=7
+
+--check@spotlight_enable3:スポットライト3つめ,0
+--track@spotlight_x3:X3,-5000,5000,0,0.1
+--track@spotlight_y3:Y3,-5000,5000,-300,0.1
+--track@spotlight_rotate3:回転3,-3600,3600,0,0.01
+--track@spotlight_aspect3:縦横比3,-100,100,0,0.01
+--track@spotlight_size3:サイズ3,0,4000,300
+--track@spotlight_blur3:ぼかし3,0,1000,0
+--select@shape3:種類3=1,背景=0,円=1,四角形=2,三角形=3,五角形=4,六角形=5,星型=6,ハート=7
+
+--check@spotlight_enable4:スポットライト4つめ,0
+--track@spotlight_x4:X4,-5000,5000,600,0.1
+--track@spotlight_y4:Y4,-5000,5000,-300,0.1
+--track@spotlight_rotate4:回転4,-3600,3600,0,0.01
+--track@spotlight_aspect4:縦横比4,-100,100,0,0.01
+--track@spotlight_size4:サイズ4,0,4000,300
+--track@spotlight_blur4:ぼかし4,0,1000,0
+--select@shape4:種類4=1,背景=0,円=1,四角形=2,三角形=3,五角形=4,六角形=5,星型=6,ハート=7
+
+--check@spotlight_enable5:スポットライト5つめ,0
+--track@spotlight_x5:X5,-5000,5000,-600,0.1
+--track@spotlight_y5:Y5,-5000,5000,-300,0.1
+--track@spotlight_rotate5:回転5,-3600,3600,0,0.01
+--track@spotlight_aspect5:縦横比5,-100,100,0,0.01
+--track@spotlight_size5:サイズ5,0,4000,300
+--track@spotlight_blur5:ぼかし5,0,1000,0
+--select@shape5:種類5=1,背景=0,円=1,四角形=2,三角形=3,五角形=4,六角形=5,星型=6,ハート=7
+
+obj.setanchor("spotlight_x,spotlight_y",0)
+
+obj.copybuffer("cache:origin","object")
+
+obj.setoption("dst","tmp",obj.screen_w,obj.screen_h)
+
+obj.load("figure","背景",spotlight_color,1)
+
+local e_num = 1
+
+if spotlight_enable2 == 1 then
+    e_num = e_num + 1
+end
+if spotlight_enable3 == 1 then
+    e_num = e_num + 1
+end
+if spotlight_enable4 == 1 then
+    e_num = e_num + 1
+end
+if spotlight_enable5 == 1 then
+    e_num = e_num + 1
+end
+
+-- 5つ分のデータを格納する親テーブル
+local all_spotlights = {}
+
+-- 入力値をあらかじめ配列に入れておく
+local input_x = {spotlight_x, spotlight_x2, spotlight_x3, spotlight_x4, spotlight_x5}
+local input_y = {spotlight_y, spotlight_y2, spotlight_y3, spotlight_y4, spotlight_y5}
+local input_rotate = {spotlight_rotate, spotlight_rotate2, spotlight_rotate3, spotlight_rotate4, spotlight_rotate5}
+local input_aspect = {spotlight_aspect, spotlight_aspect2, spotlight_aspect3, spotlight_aspect4, spotlight_aspect5}
+local input_size = {spotlight_size, spotlight_size2, spotlight_size3, spotlight_size4, spotlight_size5}
+local input_blur = {spotlight_blur, spotlight_blur2, spotlight_blur3, spotlight_blur4, spotlight_blur5}
+local input_shape = {shape, shape2, shape3, shape4, shape5}
+local input_reverse = {1, 1, 1, 1, 1} -- 常に同じ定数値を代入している。「反転」は当スクリプトでは正常に機能しないため。
+local input_match = {0, 0, 0, 0, 0} -- 常に同じ定数値を代入している。「元のサイズに合わせる」は当スクリプトでは正常に機能しないため。
+
+local shape_name = {
+    [0] = "背景",
+    [1] = "円",
+    [2] = "四角形",
+    [3] = "三角形",
+    [4] = "五角形",
+    [5] = "六角形",
+    [6] = "星型",
+    [7] = "ハート",
+}
+
+for i = 1, e_num do
+    -- 各要素に対応する配列の i 番目の値を代入
+    all_spotlights[i] = {
+        spotlight_x      = input_x[i],
+        spotlight_y      = input_y[i],
+        spotlight_rotate = input_rotate[i],
+        spotlight_size   = input_size[i],
+        spotlight_aspect = input_aspect[i],
+        spotlight_blur   = input_blur[i],
+        spotlight_shape  = shape_name[input_shape[i]] or "円",
+        reverse          = input_reverse[i], --  -- ここは常に同じ値を参照している
+        match_size       = input_match[i] -- ここは常に同じ値を参照している
+    }
+end
+
+for i = 1,e_num do
+    obj.effect("マスク",
+        "X",all_spotlights[i].spotlight_x,
+        "Y",all_spotlights[i].spotlight_y,
+        "回転",all_spotlights[i].spotlight_rotate,
+        "サイズ",all_spotlights[i].spotlight_size,
+        "縦横比",all_spotlights[i].spotlight_aspect,
+        "ぼかし",all_spotlights[i].spotlight_blur,
+        "マスクの種類",all_spotlights[i].spotlight_shape,
+        "マスクの反転",all_spotlights[i].reverse,
+        "元のサイズに合わせる",all_spotlights[i].match_size
+    )
+end
+
+local ox,oy,oz,zoom,alpha,rx,ry,rz = obj.ox,obj.oy,obj.oz,1,spotlight_alpha/100,obj.rx,obj.ry,obj.ry
+obj.draw(ox,oy,oz,zoom,alpha,rx,ry,rz)
+
+obj.copybuffer("cache:spotlight","tmp")
+
+obj.clearbuffer("tempbuffer")
+
+obj.copybuffer("object","cache:origin")
+
+obj.draw()
+
+obj.copybuffer("object","cache:spotlight")
+
+obj.draw()
+
+obj.setoption("dst","frm")
+
+obj.load("tempbuffer")

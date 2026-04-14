@@ -1,0 +1,55 @@
+-- label:装飾
+
+--track@spotlight_x:X,-5000,5000,300,0.1
+--track@spotlight_y:Y,-5000,5000,200,0.1
+--track@spotlight_rotate:回転,-3600,3600,0,0.01
+--track@spotlight_aspect:縦横比,-100,100,0,0.01
+--track@spotlight_size:サイズ,0,4000,300
+--track@spotlight_blur:ぼかし,0,1000,0
+--select@shape:種類=1,背景=0,円=1,四角形=2,三角形=3,五角形=4,六角形=5,星型=6,ハート=7
+--color@spotlight_color:色,0x000000
+--track@spotlight_alpha:透明度,0,100,70,0.01
+--check@reverse:反転,1
+--check@match_size:元のサイズに合わせる,0
+
+obj.setanchor("spotlight_x,spotlight_y",0)
+
+obj.copybuffer("cache:origin","object")
+
+obj.setoption("dst","tmp",obj.screen_w,obj.screen_h)
+
+obj.load("figure","背景",spotlight_color,1)
+
+local shape_name = {
+    [0] = "背景",
+    [1] = "円",
+    [2] = "四角形",
+    [3] = "三角形",
+    [4] = "五角形",
+    [5] = "六角形",
+    [6] = "星型",
+    [7] = "ハート",
+}
+
+local  spotlight_shape = shape_name[shape] or "円"
+
+obj.effect("マスク","X",spotlight_x,"Y",spotlight_y,"回転",spotlight_rotate,"サイズ",spotlight_size,"縦横比",spotlight_aspect,"ぼかし",spotlight_blur,"マスクの種類",spotlight_shape,"マスクの反転",reverse,"元のサイズに合わせる",match_size)
+
+local ox,oy,oz,zoom,alpha,rx,ry,rz = obj.ox,obj.oy,obj.oz,1,spotlight_alpha/100,obj.rx,obj.ry,obj.ry
+obj.draw(ox,oy,oz,zoom,alpha,rx,ry,rz)
+
+obj.copybuffer("cache:spotlight","tmp")
+
+obj.clearbuffer("tempbuffer")
+
+obj.copybuffer("object","cache:origin")
+
+obj.draw()
+
+obj.copybuffer("object","cache:spotlight")
+
+obj.draw()
+
+obj.setoption("dst","frm")
+
+obj.load("tempbuffer")

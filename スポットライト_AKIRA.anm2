@@ -1,4 +1,4 @@
--- label:装飾
+--label:装飾
 
 --track@spotlight_x:X,-5000,5000,300,0.1
 --track@spotlight_y:Y,-5000,5000,200,0.1
